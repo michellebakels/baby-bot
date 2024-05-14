@@ -57,23 +57,26 @@ Make sure All HTML is generated with the JSX flavoring.
 </div>
 """
 
-messages = [{
-  "role": "system",
-  "content": "You are a helpful assistant that answers questions."
-}, {
+messages = [
+  {
+    "role": "system",
+    "content": "You are a helpful assistant that answers questions."
+  }, {
   "role": "system",
   "content": CODE_PROMPT
 }]
 
 logging.basicConfig(
-  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-  level=logging.INFO)
+  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  logging.info('Entered the start function')
   await context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="I'm a bot, please talk to me!")
 
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info('Entered the chat function')
     messages.append({"role": "user", "content": update.message.text})
     initial_response = openai.chat.completions.create(
         model="gpt-3.5-turbo", messages=messages, tools=functions
@@ -153,10 +156,10 @@ if __name__ == '__main__':
   start_handler = CommandHandler('start', start)
   # chat_handler = CommandHandler('chat', chat)
   chat_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), chat)
- # mozilla_handler = CommandHandler('mozilla', mozilla)
+  mozilla_handler = CommandHandler('mozilla', mozilla)
   
   application.add_handler(start_handler)
   application.add_handler(chat_handler)
- # application.add_handler(mozilla_handler)
+ application.add_handler(mozilla_handler)
 
   application.run_polling()
